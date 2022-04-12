@@ -18,6 +18,9 @@ public class Solution {
     private final Building building = new Building();
     private int passengerUp, passengerDown, pass1, pass2, pass0;
     private Floor floor;
+    StringBuilder liftOut = new StringBuilder();
+    StringBuilder liftIn = new StringBuilder();
+    StringBuilder liftWaiting = new StringBuilder();
 
     public static void main(String[] args) {
         Solution solution = new Solution();
@@ -25,7 +28,8 @@ public class Solution {
     }
 
     void start() {
-        System.out.printf("*******************\nВ здании %d этажей\n*******************\n\n", building.getFloorList().size());
+        System.out.printf("*******************\nВ здании %d этажей\n*******************\n", building.getFloorList().size());
+        System.out.println();
         while (true) {
             if (status == State.UP) {
                 goUp();
@@ -38,37 +42,53 @@ public class Solution {
     }
 
     void goUp() {
+        liftOut = new StringBuilder();
+        liftIn = new StringBuilder();
+        liftWaiting = new StringBuilder();
+
         passengerUp = 0;
         passengerDown = 0;
         pass0 = 0;
         pass1 = 0;
         pass2 = 0;
 
-        System.out.printf("^ ****** %d этаж  ****** ^\n", currentFloor + 1);
+        System.out.printf("\n^ ****** %d этаж  ****** ^\n", currentFloor + 1);
         floor = building.getFloorList().get(currentFloor);
 
         pass0 = elevatorList.size();
-        passengerOut(currentFloor);
+        elevatorOut(currentFloor);
         pass1 = elevatorList.size();
 
+        liftWaiting.append("---- Ждушие лифт ----");
         for (int i = 0; i < floor.getPassengerList().size(); i++) {
-            System.out.printf("Пассажир %d, откуда %d, куда %d\n",
+            liftWaiting.append(String.format("\n#%d, откуда %d, куда %d",
                     i + 1,
                     floor.getPassengerList().get(i).getCurrentFloor() + 1,
-                    floor.getPassengerList().get(i).getFloorToGo() + 1);
+                    floor.getPassengerList().get(i).getFloorToGo() + 1));
             if (floor.getPassengerList().get(i).getFloorToGo() > currentFloor) {
                 passengerUp++;
-                passengerIn(floor.getPassengerList().get(i));
+                elevatorIn(floor.getPassengerList().get(i));
             } else {
                 passengerDown++;
             }
         }
-
         pass2 = elevatorList.size();
+        liftWaiting.append(String.format("\nВсего %d(вверх %d, вниз %d)",
+                floor.getPassengerList().size(), passengerUp, passengerDown));
 
-        System.out.printf("В лифте: до %d, после %d\n", pass1 > 0 ? pass1 : pass0, pass2);
-        System.out.printf("Ждуших лифт %d(вверх %d, вниз %d)\nМаксимальный этаж - %d\n\n",
-                floor.getPassengerList().size(), passengerUp, passengerDown, maxFloor + 1);
+        if (elevatorList.size() > 0) {
+            liftIn.append("---- В лифте ----");
+            for (int i = 0; i < elevatorList.size(); i++) {
+                liftIn.append(String.format("\n#%d, откуда %d, куда %d",
+                        i + 1, elevatorList.get(i).getCurrentFloor() + 1, elevatorList.get(i).getFloorToGo() + 1));
+            }
+            liftIn.append(String.format("\nВсего %d (до %d, после %d)\nМаксимальный этаж - %d\n",
+                    elevatorList.size(), pass1 > 0 ? pass1 : pass0, pass2, maxFloor + 1));
+        }
+
+        if (liftOut.length() > 0) System.out.println(liftOut);
+        if (liftWaiting.length() > 0) System.out.println(liftWaiting);
+        if (liftIn.length() > 0) System.out.println(liftIn);
 
         delay(1);
 
@@ -79,36 +99,53 @@ public class Solution {
     }
 
     void goDown() {
+        liftOut = new StringBuilder();
+        liftIn = new StringBuilder();
+        liftWaiting = new StringBuilder();
+
         passengerUp = 0;
         passengerDown = 0;
         pass0 = 0;
         pass1 = 0;
         pass2 = 0;
 
-        System.out.printf("v ****** %d этаж  ****** v\n", currentFloor + 1);
+        System.out.printf("\nv ****** %d этаж  ****** v\n", currentFloor + 1);
         floor = building.getFloorList().get(currentFloor);
 
         pass0 = elevatorList.size();
-        passengerOut(currentFloor);
+        elevatorOut(currentFloor);
         pass1 = elevatorList.size();
 
+        liftWaiting.append("---- Ждушие лифт ----");
         for (int i = 0; i < floor.getPassengerList().size(); i++) {
-            System.out.printf("Пассажир %d, откуда %d, куда %d\n",
+            liftWaiting.append(String.format("\n#%d, откуда %d, куда %d",
                     i + 1,
                     floor.getPassengerList().get(i).getCurrentFloor() + 1,
-                    floor.getPassengerList().get(i).getFloorToGo() + 1);
+                    floor.getPassengerList().get(i).getFloorToGo() + 1));
             if (floor.getPassengerList().get(i).getFloorToGo() > currentFloor) {
                 passengerUp++;
             } else {
-                passengerIn(floor.getPassengerList().get(i));
+                elevatorIn(floor.getPassengerList().get(i));
                 passengerDown++;
             }
         }
-
         pass2 = elevatorList.size();
+        liftWaiting.append(String.format("\nВсего %d(вверх %d, вниз %d)",
+                floor.getPassengerList().size(), passengerUp, passengerDown));
 
-        System.out.printf("В лифте: до %d, после %d\n", pass1 > 0 ? pass1 : pass0, pass2);
-        System.out.printf("Ждуших лифт %d(вверх %d, вниз %d)\nМаксимальный этаж - %d\n\n", floor.getPassengerList().size(), passengerUp, passengerDown, maxFloor + 1);
+        if (elevatorList.size() > 0) {
+            liftIn.append("---- В лифте ----");
+            for (int i = 0; i < elevatorList.size(); i++) {
+                liftIn.append(String.format("\n#%d, откуда %d, куда %d",
+                        i + 1, elevatorList.get(i).getCurrentFloor() + 1, elevatorList.get(i).getFloorToGo() + 1));
+            }
+            liftIn.append(String.format("\nВсего %d (до %d, после %d)\nМаксимальный этаж - %d\n",
+                    elevatorList.size(), pass1 > 0 ? pass1 : pass0, pass2, maxFloor + 1));
+        }
+
+        if (liftOut.length() > 0) System.out.println(liftOut);
+        if (liftWaiting.length() > 0) System.out.println(liftWaiting);
+        if (liftIn.length() > 0) System.out.println(liftIn);
 
         delay(1);
 
@@ -118,20 +155,25 @@ public class Solution {
         } else currentFloor--;
     }
 
-    void passengerOut(int currentFloor) {
+    void elevatorOut(int currentFloor) {
         List<Passenger> found = new ArrayList<>();
         for (Passenger passenger : elevatorList) {
             if (passenger.getFloorToGo() == currentFloor) {
                 found.add(passenger);
                 passenger.setCurrentFloor(currentFloor);
                 passenger.setFloorToGo(Utils.getRandomFloor(currentFloor));
-                System.out.printf("Новое значение для выходящего: %d - %d\n", passenger.getCurrentFloor() + 1, passenger.getFloorToGo() + 1);
+                liftOut.append(String.format("\nНовое значение: %d - %d", passenger.getCurrentFloor() + 1, passenger.getFloorToGo() + 1));
+
             }
+        }
+        if (found.size() > 0) {
+            liftOut.insert(0, "--- Выходящие из лифта ---");
+            liftOut.append(String.format("\nВсего %d", found.size()));
         }
         elevatorList.removeAll(found);
     }
 
-    void passengerIn(Passenger passenger) {
+    void elevatorIn(Passenger passenger) {
         if (elevatorList.size() < MAX_PASSENGERS_COUNT) {
             if (passenger.getFloorToGo() > maxFloor && status == State.UP) maxFloor = passenger.getFloorToGo();
             if (passenger.getFloorToGo() < maxFloor && status == State.DOWN) maxFloor = passenger.getFloorToGo();
@@ -155,7 +197,7 @@ public class Solution {
 
     void chooseDirection() {
         int max = maxFloor;
-        if (elevatorList.size() == 0 && maxFloor != building.getFloorList().size()) {
+        if (elevatorList.size() == 0 && maxFloor < building.getFloorList().size() && maxFloor != 0) {
             if (status == State.UP && passengerUp > 0 && passengerUp > passengerDown) {
                 for (int i = 0; i < floor.getPassengerList().size(); i++) {
 

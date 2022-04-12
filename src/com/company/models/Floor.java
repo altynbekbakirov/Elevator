@@ -8,7 +8,7 @@ import java.util.List;
 public class Floor {
     int currentFloor;
     List<Passenger> passengerList = new ArrayList<>();
-    int numberOfPassengers = Utils.getRandomNumber(1, 2);
+    int numberOfPassengers = Utils.getRandomNumber(1, 10);
 
     public Floor(int currentFloor) {
         this.currentFloor = currentFloor;

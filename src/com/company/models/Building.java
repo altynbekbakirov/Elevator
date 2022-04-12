@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Building {
-    public static final int floors = Utils.getRandomNumber(5, 10);
+    public static final int floors = Utils.getRandomNumber(5, 20);
     private final List<Floor> floorList = new ArrayList<>();
 
     public Building() {
